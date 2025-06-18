@@ -1,5 +1,7 @@
 openmeteo-requests
 requests-cache
 retry-requests
-numpy==2.3.0
+numpy
 pandas
+uvicorn
+fastapi

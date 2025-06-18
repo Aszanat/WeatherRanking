@@ -4,8 +4,9 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-EXPOSE 80
+EXPOSE 7890
 
-CMD ["python", "./app.py"]
+ENTRYPOINT ["uvicorn", "app:app", "--reload", "--port", "7890", "--host", "0.0.0.0"]
