@@ -16,7 +16,7 @@ cities = {
     "Munich": (48.1374, 11.5755)
 }
 
-def connect_to_openmeteo():
+def connect_to_openmeteo(start_date: date, end_date: date):
     # Setup the Open-Meteo API client with cache and retry on error
     cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
     retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
@@ -30,8 +30,8 @@ def connect_to_openmeteo():
 	    "longitude": [place[1] for place in cities.values()],
 	    "hourly": ["temperature_2m", "relative_humidity_2m", "wind_speed_10m", "cloud_cover"],
         "timezone": "auto",
-	    "start_date": date.today() - timedelta(days=1),
-	    "end_date": date.today() - timedelta(days=1)
+	    "start_date": start_date,
+	    "end_date": end_date
     }
     responses = openmeteo.weather_api(url, params=params)
 
@@ -41,11 +41,6 @@ def connect_to_openmeteo():
     for i in range(len(responses)):
         response = responses[i]
         city = cities_list[i]
-        print(city)
-        print(f"Coordinates {response.Latitude()}°N {response.Longitude()}°E")
-        print(f"Elevation {response.Elevation()} m asl")
-        print(f"Timezone {response.Timezone()}{response.TimezoneAbbreviation()}")
-        print(f"Timezone difference to GMT+0 {response.UtcOffsetSeconds()} s")
 
         # Process hourly data. The order of variables needs to be the same as requested.
         hourly = response.Hourly()
@@ -60,28 +55,23 @@ def connect_to_openmeteo():
         cloud_cover_mean = np.mean(hourly_cloud_cover)
 
         temperature_score = np.max([10 - abs(24 -round(temperature_mean)), 0])
-        print("Temperature " + str(temperature_mean) + " scores " + str(temperature_score))
 
         wind_score = np.max([10 - (round(wind_speed_mean / 6)), 0])
         # 6 - arbitrary number inspired by beauffort's scale
-        print("Wind speed " + str(wind_speed_mean) + " scores " + str(wind_score))
 
         humidity_score = 10 - round(abs(50 - humidity_mean)/5)
-        print("Humidity " + str(humidity_mean) + " scores " + str(humidity_score))
 
         cloud_score = 10 \
             - (cloud_cover_mean < 25)*round((25 - cloud_cover_mean)/2.5) \
             - (cloud_cover_mean > 25)*round((cloud_cover_mean - 25)/7.5)
-        print("Cloud cover " + str(cloud_cover_mean) + " scores " + str(cloud_score))
 
         total_score = 0.35 * temperature_score \
             + 0.2 * wind_score \
             + 0.2 * humidity_score \
             + 0.25 * cloud_score
 
-        print("Total score: " + str(total_score))
         scores.append((city, total_score.item()))
     
-    print("Scores: " + str(sorted(scores, key=lambda score: score[1], reverse=True)))
+    return sorted(scores, key=lambda score: score[1], reverse=True)
 
 
