@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from openmeteo import connect_to_openmeteo
 from datetime import date, timedelta
+from utils import parse_date
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -41,18 +42,18 @@ def gui(request: Request, response_class=HTMLResponse):
 def get_cities_scores(start_date: Union[str, date, None] = None, end_date: Union[str, date, None] = None):
     if start_date and end_date:
         if isinstance(start_date, str):
-            start_date = date.fromisoformat(start_date)
+            start_date = parse_date(start_date, "Start Date")
         if isinstance(end_date, str):
-            end_date = date.fromisoformat(end_date)
+            end_date = parse_date(end_date, "End Date")
         if end_date - start_date < timedelta(days=0):
-            raise HTTPException(status_code=400, detail="end_date is earlier than start_date")
+            raise HTTPException(status_code=400, detail="End Date can't be earlier than Start Date!")
     elif start_date:
         if isinstance(start_date, str):
-            start_date = date.fromisoformat(start_date)
+            start_date = parse_date(start_date, "Start Date")
         end_date = start_date
     elif end_date:
         if isinstance(end_date, str):
-            end_date = date.fromisoformat(end_date)
+            end_date = parse_date(end_date, "End Date")
         start_date = end_date
     else:
         end_date = date.today() - timedelta(days=1)

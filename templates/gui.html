@@ -26,7 +26,7 @@
         </div>
     </form>
     {%- if exception -%}
-    <div class="form_element" style="color:red; width: 100%;">We really can't help with End Date earlier than Start Date!</div>
+    <div class="form_element" style="color:red; width: 100%;">{{exception}}</div>
     {%- endif -%}
     <table>
         {%- if cities_scores -%}
