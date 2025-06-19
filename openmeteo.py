@@ -35,7 +35,7 @@ def connect_to_openmeteo():
     }
     responses = openmeteo.weather_api(url, params=params)
 
-    scores = {}
+    scores = []
     cities_list = list(cities.keys())
 
     for i in range(len(responses)):
@@ -69,7 +69,19 @@ def connect_to_openmeteo():
         humidity_score = 10 - round(abs(50 - humidity_mean)/5)
         print("Humidity " + str(humidity_mean) + " scores " + str(humidity_score))
 
-        cloud_score = 10 - (cloud_cover_mean < 25)*round((25 - cloud_cover_mean)/2.5) - (cloud_cover_mean > 25)*round((cloud_cover_mean - 25)/7.5)
+        cloud_score = 10 \
+            - (cloud_cover_mean < 25)*round((25 - cloud_cover_mean)/2.5) \
+            - (cloud_cover_mean > 25)*round((cloud_cover_mean - 25)/7.5)
         print("Cloud cover " + str(cloud_cover_mean) + " scores " + str(cloud_score))
+
+        total_score = 0.35 * temperature_score \
+            + 0.2 * wind_score \
+            + 0.2 * humidity_score \
+            + 0.25 * cloud_score
+
+        print("Total score: " + str(total_score))
+        scores.append((city, total_score.item()))
+    
+    print("Scores: " + str(sorted(scores, key=lambda score: score[1], reverse=True)))
 
 
