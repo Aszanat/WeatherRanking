@@ -26,16 +26,20 @@
         </div>
     </form>
     <p>
-    <ol>
+    <table>
+        <tr>
+            <th>Rank</th>
+            <th>City</th>
+            <th>Score</th>
+        </tr>
         {% for city_score in cities_scores %}
-        <li>
-            <div class="list_el">
-                <div>{{city_score[0]}}</div>
-                <div>{{city_score[1]}} points</div>
-            </div>
-        </li>
+        <tr>
+            <td>{{loop.index}}</td>
+            <td>{{city_score[0]}}</td>
+            <td>{{city_score[1]}}</td>
+        </tr>
         {% endfor %}
-    </ol>
+    </table>
     </p>
 </body>
 
