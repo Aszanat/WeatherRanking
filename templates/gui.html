@@ -25,13 +25,17 @@
             <button type="submit">Get Data</button>
         </div>
     </form>
-    <p>
+    {%- if exception -%}
+    <div class="form_element" style="color:red; width: 100%;">We really can't help with End Date earlier than Start Date!</div>
+    {%- endif -%}
     <table>
+        {%- if cities_scores -%}
         <tr>
             <th>Rank</th>
             <th>City</th>
             <th>Score</th>
         </tr>
+        {%- endif -%}
         {% for city_score in cities_scores %}
         <tr>
             <td>{{loop.index}}</td>
@@ -40,7 +44,6 @@
         </tr>
         {% endfor %}
     </table>
-    </p>
 </body>
 
 </html>

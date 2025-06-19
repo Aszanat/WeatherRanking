@@ -21,14 +21,19 @@ def gui(request: Request, response_class=HTMLResponse):
     if not end_date:
         end_date = yesterday
     cities_scores = []
+    exception = None
 
     if request.query_params:
-        cities_scores = get_cities_scores(start_date=start_date, end_date=end_date)
+        try:
+            cities_scores = get_cities_scores(start_date=start_date, end_date=end_date)
+        except HTTPException as e:
+            exception = e.detail
 
     context = {"request": request, \
         "start_date": start_date, \
         "end_date": end_date, \
-        "cities_scores": cities_scores}
+        "cities_scores": cities_scores, \
+        "exception": exception}
 
     return templates.TemplateResponse("gui.html", context)
 
