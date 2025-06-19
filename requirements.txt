@@ -5,5 +5,4 @@ numpy
 pandas
 uvicorn
 fastapi
-datetime
 Jinja2
