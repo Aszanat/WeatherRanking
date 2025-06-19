@@ -70,7 +70,7 @@ def connect_to_openmeteo(start_date: date, end_date: date):
             + 0.2 * humidity_score \
             + 0.25 * cloud_score
 
-        scores.append((city, total_score.item()))
+        scores.append((city, round(total_score.item(), 2)))
     
     return sorted(scores, key=lambda score: score[1], reverse=True)
 
